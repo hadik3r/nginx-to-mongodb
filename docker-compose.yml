@@ -1,0 +1,35 @@
+version: '2'
+services:
+  nginx:
+    image: nginx 
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports: 
+      - "8080:80"
+    depends_on:  
+      - "bridge"
+    networks:
+      - nginx-to-mongo
+
+  bridge:
+    image: hadik3r/nginx-to-mongodb
+    restart: always
+    ports:
+      - "514:514/udp"
+    depends_on:  
+      - "mongo"
+    networks:
+      - nginx-to-mongo
+
+  mongo:
+      image: mongo
+      restart: always
+      ports:
+          - 27017:27017
+      networks:
+        - nginx-to-mongo
+
+networks:
+  nginx-to-mongo:
+    driver: bridge
